@@ -46,6 +46,12 @@
   transition: transform 0.3s;
 }
 
+.submenu-icon {
+  height: 60px !important;
+  width: 60px !important;
+  border-radius: 5px;
+}
+
 /* Styling for each submenu item */
 .submenu-item {
   border-radius: 5px;
@@ -67,8 +73,7 @@
       0 0 1px rgba(255, 255, 255, 0.8);
   }
   to {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 1),
-      0 0 5px rgba(255, 255, 255, 1);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 5px rgba(255, 255, 255, 1);
   }
 }
 
