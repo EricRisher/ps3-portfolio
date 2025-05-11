@@ -207,7 +207,7 @@ export default function XMBMenu() {
   const [subSelectedMapping, setSubSelectedMapping] = useState<{
     [key: string]: number;
   }>({});
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null); // Track the active submenu
+  const [activeSubmenu] = useState<string | null>(null); // Track the active submenu
   const [isPhotoListActive, setIsPhotoListActive] = useState(false); // Track if photo list is active
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0); // Track the currently selected photo
 
@@ -239,7 +239,7 @@ export default function XMBMenu() {
       6: [-715, -715, -715, -715, -715, -715, -570],
       7: [-810, -810, -810, -810, -810, -810, -810],
     };
-    const offsets = offsetConfig[selectedStep];
+    const offsets = offsetConfig[selectedStep as keyof typeof offsetConfig];
     if (offsets && offsets[childIndex] !== undefined) {
       return offsets[childIndex];
     }
@@ -258,7 +258,7 @@ export default function XMBMenu() {
             menuItems[selected].submenu![currentSubSelected]?.photos
           ) {
             const photos =
-              menuItems[selected].submenu![currentSubSelected]?.photos!;
+              menuItems[selected].submenu && menuItems[selected].submenu[currentSubSelected]?.photos || [];
             if (currentPhotoIndex < photos.length - 1) {
               setCurrentPhotoIndex(currentPhotoIndex + 1);
             }
