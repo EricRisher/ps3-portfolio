@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import "./XMBMenu.css";
 import PS3Header from "./PS3Header";
+import MediaPlayer from "./MediaPlayer";
 
 interface MenuSubItem {
   id: string;
@@ -166,18 +167,13 @@ const menuItems: MenuItem[] = [
     icon: "/icons/video.svg",
     submenu: [
       {
-        id: "vid1",
-        label: "Movies",
+        id: "desert-1",
+        label: "Desert",
         url: "",
-        icon: "/icons/info.svg",
-        content: "My Movie Collection",
-      },
-      {
-        id: "vid2",
-        label: "Shows",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "My TV Shows Collection",
+        icon: "/icons/folder-desert.png",
+        content: "",
+        subheading: "1 Video",
+        videos: ["/videos/4runner.mov"],
       },
     ],
   },
@@ -210,6 +206,9 @@ export default function XMBMenu() {
   const [activeSubmenu] = useState<string | null>(null); // Track the active submenu
   const [isPhotoListActive, setIsPhotoListActive] = useState(false); // Track if photo list is active
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0); // Track the currently selected photo
+  const [isVideoPlayerActive, setIsVideoPlayerActive] = useState(false);
+  const [currentVideoList, setCurrentVideoList] = useState<string[]>([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
   const currentSubSelected = subSelectedMapping[menuItems[selected].id] ?? 0;
 
@@ -219,15 +218,18 @@ export default function XMBMenu() {
 
   function navigateTo(url: string): void {
     if (typeof window !== "undefined") {
-      if (!/^https?:\/\//i.test(url)) {
-        url = "https://" + url;
+      try {
+        if (!/^https?:\/\//i.test(url)) {
+          url = "https://" + url;
+        }
+        window.open(url, "_blank");
+      } catch (error) {
+        console.error("Error while navigating to URL: ", error);
       }
-      window.open(url, "_blank");
     }
   }
 
   const getYOffset = (childIndex: number, selectedStep: number) => {
-    
     // The offsets are based on the index of the child element
     const offsetConfig = {
       0: [0, 0, 0, 0, 0, 0, 0],
@@ -258,7 +260,9 @@ export default function XMBMenu() {
             menuItems[selected].submenu![currentSubSelected]?.photos
           ) {
             const photos =
-              menuItems[selected].submenu && menuItems[selected].submenu[currentSubSelected]?.photos || [];
+              (menuItems[selected].submenu &&
+                menuItems[selected].submenu[currentSubSelected]?.photos) ||
+              [];
             if (currentPhotoIndex < photos.length - 1) {
               setCurrentPhotoIndex(currentPhotoIndex + 1);
             }
@@ -280,6 +284,15 @@ export default function XMBMenu() {
           break;
         case "Escape":
           setIsPhotoListActive(false);
+          break;
+        default:
+          break;
+      }
+    }
+     else if (isVideoPlayerActive) {
+      switch (e.key) {
+        case "Escape":
+          setIsVideoPlayerActive(false);
           break;
         default:
           break;
@@ -442,7 +455,6 @@ export default function XMBMenu() {
                           width={60}
                           height={60}
                           className="submenu-icon transition mr-12"
-                          
                         />
 
                         <motion.div className="flex flex-col">
@@ -556,6 +568,16 @@ export default function XMBMenu() {
               )}
             </div>
           )}
+
+        {isVideoPlayerActive && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80">
+            <MediaPlayer
+              src={currentVideoList[currentVideoIndex]}
+              onClose={() => setIsVideoPlayerActive(false)}
+              // Optionally add next/prev handlers if your MediaPlayer supports them
+            />
+          </div>
+        )}
       </div>
     </>
   );

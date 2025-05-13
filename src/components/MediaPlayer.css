@@ -1,84 +1,102 @@
 .media-container {
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    position: relative; /* Ensure proper stacking context */
-    overflow: hidden; /* Prevent content overflow */
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
 
 .media-player {
-  position: relative; /* Changed to relative to avoid stacking issues */
-  display: flex; /* Use flexbox for centering */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  width: 1000px; /* Adjust to your desired width */
-  height: 1000px; /* Adjust to your desired height */
-  margin: 0 auto; /* Center within the parent container */
-  z-index: 5; /* Ensure it stays above other elements */
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 800px;
+  height: 800px;
+  margin: 0 auto;
+  z-index: 5;
 }
 
 .media-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%; /* Match the media-player container */
-  height: 100%; /* Match the media-player container */
+  width: 100%;
+  height: 100%;
   background-image: url("/y2k-player.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  z-index: 2; /* Ensure it stays above the media element */
-  pointer-events: none; /* Prevent the overlay from blocking clicks */
+  z-index: 2;
+  pointer-events: none;
+}
+
+.media-content {
+  position: absolute;
+  top: 130px;
+  left: 150px;
+  width: 520px;
+  height: 400px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.media-element {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  border-radius: 18%;
 }
 
 .media-button {
   position: absolute;
   z-index: 100;
   cursor: pointer;
-  border-radius: 40%; /* Optional: Add rounded corners */
-  pointer-events: all; /* Ensure it can be clicked */
-}
-
-.toggle-button {
-  top: 77%; /* Adjust to match the button position on the PNG */
-  left: 26%; /* Adjust to match the button position on the PNG */
+  pointer-events: all;
+  outline: none;
   transform: translate(-50%, -50%);
-  width: 60px; /* Adjust to your desired size */
-  height: 100px; /* Adjust to your desired size */
 }
 
 .main-media-btn {
-  top: 61%; /* Adjust to match the button position on the PNG */
-  left: 26%; /* Adjust to match the button position on the PNG */
-  transform: translate(-50%, -50%);
-  width: 26px; /* Adjust to your desired size */
-  height: 50px; /* Adjust to your desired size */
-  z-index: 100; /* Ensure it stays above the overlay */
-  cursor: pointer;
-  border-radius: 40%; /* Optional: Add rounded corners */
-  pointer-events: all; /* Ensure it can be clicked */
+  border-radius: 50%;
+  bottom: 83px;
+  left: 227px;
+  width: 100px;
+  height: 100px;
 }
 
-.media-content {
-  position: absolute;
-  top: 27%; /* Center vertically */
-  left: 0;
-  width: 100%; /* Match the media-player container */
-  height: 40%; /* Match the media-player container */
-  overflow: hidden;
-  z-index: 1; /* Lower than the overlay */
+.reset-btn {
+  border-radius: 50%;
+  bottom: 112px;
+  left: 253px;
+  width: 45px;
+  height: 68px;
+  z-index: 101;
 }
 
-.media-element {
-  position: absolute;
-  top: 50%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust for centering */
-  width: 64%; /* Fill the container */
-  height: 50%; /* Fill the container */
-  object-fit: cover; /* Maintain aspect ratio while filling */
-  z-index: 1; /* Lower than the overlay */
-  border-radius: 18%; /* Optional: Add rounded corners */
+.cir-media-btn {
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+}
+
+.menu-btn {
+  bottom: 226px;
+  left: 149px;
+}
+
+.close-btn {
+  bottom: 286px;
+  right: 82px;
+}
+
+.minimize-btn {
+  bottom: 228px;
+  right: 96px;
 }

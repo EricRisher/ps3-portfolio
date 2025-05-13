@@ -9,7 +9,7 @@ export default function VideoBackground() {
       playsInline
       className="absolute top-0 left-0 w-full h-full object-cover"
     >
-      <source src="/ps3-ribbon.mp4" type="video/mp4" />
+      <source src="/videos/ps3-ribbon.mp4" type="video/mp4" />
     </video>
   );
 }
