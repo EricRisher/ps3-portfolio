@@ -1,14 +1,33 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import "./MediaPlayer.css";
 
 // MediaPlayer props
 interface MediaPlayerProps {
-  src: string; // Video source
-  onClose: () => void; // Callback function to close the media player
+  src: string;
+  onClose: () => void;
+  minimized?: boolean;
+  onMinimize?: () => void;
+  onRestore?: () => void;
+  onNextTrack?: () => void; // Add this
+  onPrevTrack?: () => void; // Add this
+  hasNext?: boolean; // Add this (optional, for disabling)
+  hasPrev?: boolean; // Add this (optional, for disabling)
 }
 
-const MediaPlayer: React.FC<MediaPlayerProps> = ({ src, onClose }) => {
+const MediaPlayer: React.FC<MediaPlayerProps> = ({
+  src,
+  onClose,
+  minimized = false,
+  onMinimize,
+  onRestore,
+  onNextTrack,
+  onPrevTrack,
+  hasNext,
+  hasPrev,
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null); // Reference to the video element
+  const menuRef = useRef<HTMLDivElement>(null); // Reference to the menu element
+  const isAudio = src && src.toLowerCase().endsWith(".mp3"); // Check if the source is an audio file
 
   // Toggle play/pause
   const handleTogglePlayPause = () => {
@@ -23,6 +42,28 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ src, onClose }) => {
     }
   };
 
+  // Add spacebar keydown handler
+  useEffect(() => {
+    if (minimized) return; // Don't listen when minimized
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault();
+        handleTogglePlayPause();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [minimized]);
+
+  // Auto play the video when src changes and not minimized
+  useEffect(() => {
+    if (videoRef.current && src && !minimized) {
+      // Only play, don't reset currentTime
+      videoRef.current.play().catch(() => {});
+    }
+  }, [src, minimized]);
+
   // Handle menu button click
   const handleMenuButtonClick = () => {
     console.log("Menu button clicked");
@@ -31,21 +72,23 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ src, onClose }) => {
   // Handle close player click
   const handleCloseButtonClick = () => {
     if (videoRef.current) {
-      // close the media player
-      videoRef.current.style.display = "none"; // Hide the video element
-      document.querySelector(".media-player")?.classList.add("hidden");
-
       videoRef.current.pause(); // Pause the video
-      videoRef.current.currentTime = 0; // Reset the video to the beginning
-    } else {
-      console.log("Video reference is null");
     }
-    console.log("Close button clicked");
+    onClose(); // Call the onClose callback
   };
 
   // Handle minimize button click
   const handleMinimizeButtonClick = () => {
-    console.log("Minimize button clicked");
+    if (minimized) {
+      if (onRestore) onRestore();
+      console.log("Restore button clicked");
+    } else {
+      if (onMinimize) {
+        onMinimize();
+        setTimeout(() => menuRef.current?.focus(), 0);
+      }
+      console.log("Minimize button clicked");
+    }
   };
 
   // Handle reset track button click
@@ -60,52 +103,67 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({ src, onClose }) => {
 
   return (
     <div className="media-container">
-      <div className="media-player">
+      <div
+        className={`media-player${minimized ? " minimized" : ""}`}
+        tabIndex={-1}
+        style={minimized ? { pointerEvents: "auto" } : {}}
+      >
         {/* Overlay with buttons */}
         <div className="media-overlay">
           <button
             className="media-button main-media-btn"
-            onClick={() => {
-              handleTogglePlayPause();
-            }}
+            onClick={handleTogglePlayPause}
           ></button>
           <button
             className="media-button cir-media-btn menu-btn"
-            onClick={() => {
-              handleMenuButtonClick();
-            }}
+            onClick={handleMenuButtonClick}
           />
           <button
             className="media-button cir-media-btn close-btn"
-            onClick={() => {
-              handleCloseButtonClick();
-            }}
+            onClick={handleCloseButtonClick}
           ></button>
           <button
             className="media-button cir-media-btn minimize-btn"
-            onClick={() => {
-              handleMinimizeButtonClick();
-            }}
+            onClick={handleMinimizeButtonClick}
           ></button>
           <button
             className="media-button reset-btn"
-            onClick={() => {
-              handleToggleResetClick();
-            }}
+            onClick={handleToggleResetClick}
           ></button>
+          <button
+            className="media-button pill-btn next-track-btn"
+            onClick={onNextTrack}
+            disabled={!hasNext}
+          />
+          <button
+            className="media-button pill-btn prev-track-btn"
+            onClick={onPrevTrack}
+            disabled={!hasPrev}
+          />
         </div>
 
         {/* Video content */}
-        <div className="media-content">
-          <video
-            ref={(ref) => {
-              console.log("Video ref:", ref); // Debugging
-              videoRef.current = ref;
-            }}
-            src="./videos/4runner.mov"
-            className="media-element"
-            disablePictureInPicture
-          />
+        <div className={`media-content${minimized ? " minimized" : ""}`}>
+          {src ? (
+            isAudio ? (
+              <div className="media-element audio-bg">
+                <audio
+                  ref={videoRef as React.RefObject<HTMLAudioElement>}
+                  src={src}
+                  controls
+                  autoPlay
+                  style={{ width: "100%" }}
+                />
+              </div>
+            ) : (
+              <video
+                ref={videoRef}
+                src={src}
+                className="media-element"
+                disablePictureInPicture
+              />
+            )
+          ) : null}
         </div>
       </div>
     </div>

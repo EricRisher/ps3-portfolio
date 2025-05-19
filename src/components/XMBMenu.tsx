@@ -1,389 +1,132 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import "./XMBMenu.css";
 import PS3Header from "./PS3Header";
 import MediaPlayer from "./MediaPlayer";
-
-interface MenuSubItem {
-  id: string;
-  label: string;
-  url: string;
-  icon: string;
-  content: string;
-  subheading?: string;
-  photos?: { src: string; label: string; subheading: string }[];
-  videos?: string[];
-  music?: string[];
-  games?: string[];
-}
-
-interface MenuItem {
-  id: string;
-  label: string;
-  icon: string;
-  url?: string;
-  content?: string;
-  submenu?: MenuSubItem[];
-}
-
-const menuItems: MenuItem[] = [
-  {
-    id: "home",
-    label: "Home",
-    icon: "/icons/home.svg",
-    submenu: [
-      {
-        id: "home1",
-        label: "Info",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-        subheading: "Navigate using the arrow keys and select with Enter.",
-      },
-      {
-        id: "home3",
-        label: "Eric",
-        url: "ericrisher.com",
-        icon: "/icons/user.svg",
-        content: "",
-        subheading: "Learn more about me and my work.",
-      },
-      {
-        id: "home4",
-        label: "Create New User",
-        url: "",
-        icon: "/icons/create-user.svg",
-        content: "",
-      },
-      {
-        id: "home2",
-        label: "Turn Off System",
-        url: "",
-        icon: "/icons/power.svg",
-        content: "",
-      },
-      {
-        id: "home5",
-        label: "Settings",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
-      {
-        id: "home6",
-        label: "Help",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
-      {
-        id: "home7",
-        label: "About",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
-    ],
-  },
-  {
-    id: "projects",
-    label: "Projects",
-    icon: "/icons/projects.svg",
-    submenu: [
-      {
-        id: "proj1",
-        label: "CaliGo",
-        url: "www.caligo.site",
-        icon: "/icons/caligo.svg",
-        content: "",
-        subheading:
-          "CaliGo is a community-driven platform where users find and share hidden places and experiences off the beaten path.",
-      },
-      {
-        id: "proj2",
-        label: "Driveway Blasters",
-        url: "www.drivewayblaster.com",
-        icon: "/icons/drivewayblasters.png",
-        content: "",
-        subheading:
-          "Designed for a fast, responsive experience across all devices, optimized for search engines using niche keywords to enhance visibility and attract targeted traffic.",
-      },
-    ],
-  },
-  {
-    id: "Photo",
-    label: "Photo",
-    icon: "/icons/camera.svg",
-    submenu: [
-      {
-        id: "cam1",
-        label: "Belle",
-        url: "",
-        icon: "/icons/folder.svg",
-        content: "",
-        subheading: "8 Images",
-        photos: [
-          {
-            src: "/photos/belle (1).jpg",
-            label: "Belle 1",
-            subheading: "A beautiful photo of Belle.",
-          },
-          {
-            src: "/photos/belle (2).jpg",
-            label: "Belle 2",
-            subheading: "Another stunning shot of Belle.",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "music",
-    label: "Music",
-    icon: "/icons/music.svg",
-    submenu: [
-      {
-        id: "music1",
-        label: "Songs",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "My Music Collection",
-      },
-      {
-        id: "music2",
-        label: "Albums",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "My Albums Collection",
-      },
-    ],
-  },
-  {
-    id: "videos",
-    label: "Videos",
-    icon: "/icons/video.svg",
-    submenu: [
-      {
-        id: "desert-1",
-        label: "Desert",
-        url: "",
-        icon: "/icons/folder-desert.png",
-        content: "",
-        subheading: "1 Video",
-        videos: ["/videos/4runner.mov"],
-      },
-    ],
-  },
-  {
-    id: "games",
-    label: "Games",
-    icon: "/icons/games.svg",
-    submenu: [
-      {
-        id: "skill1",
-        label: "Programming",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "Programming Languages and Frameworks",
-      },
-    ],
-  },
-  {
-    id: "contact",
-    label: "Contact",
-    icon: "/icons/contact.svg",
-  },
-];
+import menuItems from "../app/data/menuItems";
+import { navigateTo, getYOffset } from "../utils/helpers";
+import {
+  handlePhotoListKeyDown,
+  handleVideoPlayerKeyDown,
+  handleMainMenuKeyDown,
+} from "../utils/xmbKeyHandlers";
 
 export default function XMBMenu() {
   const [selected, setSelected] = useState(0);
   const [subSelectedMapping, setSubSelectedMapping] = useState<{
     [key: string]: number;
   }>({});
-  const [activeSubmenu] = useState<string | null>(null); // Track the active submenu
-  const [isPhotoListActive, setIsPhotoListActive] = useState(false); // Track if photo list is active
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0); // Track the currently selected photo
+  const [activeSubmenu] = useState<string | null>(null);
+  const [isPhotoListActive, setIsPhotoListActive] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isVideoPlayerActive, setIsVideoPlayerActive] = useState(false);
-  const [currentVideoList, setCurrentVideoList] = useState<string[]>([]);
+  const [isVideoPlayerMinimized, setIsVideoPlayerMinimized] = useState(false);
+  const [currentVideoList, setCurrentVideoList] = useState<
+    { src: string; label: string; subheading: string }[]
+  >([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [currentMusicList, setCurrentMusicList] = useState<
+    { src: string; label: string; subheading: string }[]
+  >([]);
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
+  const [isMusicPlayerActive, setIsMusicPlayerActive] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const currentSubSelected = subSelectedMapping[menuItems[selected].id] ?? 0;
+  // Memoize currentSubSelected
+  const currentSubSelected = useMemo(() => {
+    return subSelectedMapping[menuItems[selected].id] ?? 0;
+  }, [subSelectedMapping, selected]);
+
+  // Memoize currentSubmenu
+  const currentSubmenu = useMemo(() => {
+    return menuItems[selected].submenu?.[currentSubSelected];
+  }, [selected, currentSubSelected]);
+
+  // Memoize currentPhotos
+  const currentPhotos = useMemo(() => {
+    return currentSubmenu?.photos;
+  }, [currentSubmenu]);
+
+  // Memoize currentVideos
+  const currentVideos = useMemo(() => {
+    return currentSubmenu?.videos;
+  }, [currentSubmenu]);
+
+  // Memoize currentContent
+  const currentContent = useMemo(() => {
+    return (
+      menuItems[selected].submenu?.[currentSubSelected]?.content ||
+      menuItems[selected].content ||
+      ""
+    );
+  }, [selected, currentSubSelected]);
 
   const itemWidth = 230;
   const containerWidth = 1000;
   const centerOffset = containerWidth / 5 - itemWidth / 2;
 
-  function navigateTo(url: string): void {
-    if (typeof window !== "undefined") {
-      try {
-        if (!/^https?:\/\//i.test(url)) {
-          url = "https://" + url;
-        }
-        window.open(url, "_blank");
-      } catch (error) {
-        console.error("Error while navigating to URL: ", error);
+  // Memoize handleKeyDown to avoid unnecessary re-renders
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (isVideoPlayerActive && !isVideoPlayerMinimized) {
+        handleVideoPlayerKeyDown(e, setIsVideoPlayerActive);
+        return;
       }
-    }
-  }
-
-  const getYOffset = (childIndex: number, selectedStep: number) => {
-    // The offsets are based on the index of the child element
-    const offsetConfig = {
-      0: [0, 0, 0, 0, 0, 0, 0],
-      1: [-240, -95, -95, -95, -95, -95, -95],
-      2: [-335, -335, -190, -190, -190, -190, -190],
-      3: [-430, -430, -430, -285, -285, -285, -285],
-      4: [-525, -525, -525, -525, -380, -380, -380],
-      5: [-620, -620, -620, -620, -620, -475, -475],
-      6: [-715, -715, -715, -715, -715, -715, -570],
-      7: [-810, -810, -810, -810, -810, -810, -810],
-    };
-    const offsets = offsetConfig[selectedStep as keyof typeof offsetConfig];
-    if (offsets && offsets[childIndex] !== undefined) {
-      return offsets[childIndex];
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const currentCategoryId = menuItems[selected].id;
-    let newSubIndex: number | null = null;
-    let shouldPlaySound = false;
-
-    if (isPhotoListActive) {
-      switch (e.key) {
-        case "ArrowDown":
-          if (
-            menuItems[selected].submenu &&
-            menuItems[selected].submenu![currentSubSelected]?.photos
-          ) {
-            const photos =
-              (menuItems[selected].submenu &&
-                menuItems[selected].submenu[currentSubSelected]?.photos) ||
-              [];
-            if (currentPhotoIndex < photos.length - 1) {
-              setCurrentPhotoIndex(currentPhotoIndex + 1);
-            }
-          }
-          break;
-        case "ArrowUp":
-          if (currentPhotoIndex > 0) {
-            setCurrentPhotoIndex(currentPhotoIndex - 1);
-          }
-          break;
-        case "Enter":
-          console.log(
-            `Selected photo: ${
-              menuItems[selected].submenu![currentSubSelected]?.photos![
-                currentPhotoIndex
-              ].label
-            }`
-          );
-          break;
-        case "Escape":
-          setIsPhotoListActive(false);
-          break;
-        default:
-          break;
+      if (isPhotoListActive) {
+        handlePhotoListKeyDown(
+          e,
+          menuItems,
+          selected,
+          currentSubSelected,
+          currentPhotoIndex,
+          setCurrentPhotoIndex,
+          setIsPhotoListActive
+        );
+        return;
       }
-    }
-     else if (isVideoPlayerActive) {
-      switch (e.key) {
-        case "Escape":
-          setIsVideoPlayerActive(false);
-          break;
-        default:
-          break;
-      }
-    } else {
-      switch (e.key) {
-        case "ArrowRight":
-          if (selected < menuItems.length - 1) {
-            setSelected(selected + 1);
-            shouldPlaySound = true;
-          }
-          break;
-        case "ArrowLeft":
-          if (selected > 0) {
-            setSelected(selected - 1);
-            shouldPlaySound = true;
-          }
-          break;
-        case "ArrowDown":
-          if (menuItems[selected].submenu) {
-            const maxIndex = menuItems[selected].submenu!.length - 1;
-            if (currentSubSelected < maxIndex) {
-              newSubIndex = currentSubSelected + 1;
-              shouldPlaySound = true;
-            }
-          }
-          break;
-        case "ArrowUp":
-          if (menuItems[selected].submenu && currentSubSelected > 0) {
-            newSubIndex = currentSubSelected - 1;
-            shouldPlaySound = true;
-          }
-          break;
-        case "Enter":
-          if (menuItems[selected].submenu) {
-            const currentItem =
-              menuItems[selected].submenu![currentSubSelected];
-            if (currentItem.photos && currentItem.photos.length > 0) {
-              setIsPhotoListActive(true);
-              setCurrentPhotoIndex(0);
-            } else if (currentItem.url && currentItem.url.trim() !== "") {
-              navigateTo(currentItem.url);
-            } else {
-              console.log(`Selected submenu item: ${currentItem.label}`);
-            }
-          } else {
-            if (
-              menuItems[selected].url &&
-              menuItems[selected].url.trim() !== ""
-            ) {
-              navigateTo(menuItems[selected].url);
-            } else {
-              console.log(
-                `Selected main category: ${menuItems[selected].label}`
-              );
-            }
-          }
-          shouldPlaySound = true;
-          break;
-        case "Escape":
-          newSubIndex = 0;
-          shouldPlaySound = true;
-          break;
-        default:
-          break;
-      }
-    }
-
-    if (newSubIndex !== null) {
-      setSubSelectedMapping((prev) => ({
-        ...prev,
-        [currentCategoryId]: newSubIndex,
-      }));
-    }
-
-    if (shouldPlaySound) {
-      const audio = new Audio("/sounds/nav.mp3");
-      audio.play();
-    }
-  };
-
-  const currentContent =
-    menuItems[selected].submenu?.[currentSubSelected]?.content ||
-    menuItems[selected].content ||
-    "";
+      handleMainMenuKeyDown(
+        e,
+        menuItems,
+        selected,
+        setSelected,
+        currentSubSelected,
+        setSubSelectedMapping,
+        setIsPhotoListActive,
+        setCurrentPhotoIndex,
+        setCurrentVideoList,
+        setCurrentVideoIndex,
+        setIsVideoPlayerActive,
+        setCurrentMusicList,
+        setCurrentMusicIndex,
+        setIsMusicPlayerActive
+      );
+    },
+    [
+      isVideoPlayerActive,
+      isVideoPlayerMinimized,
+      isPhotoListActive,
+      selected,
+      currentSubSelected,
+      currentPhotoIndex,
+      setSelected,
+      setSubSelectedMapping,
+      setIsPhotoListActive,
+      setCurrentPhotoIndex,
+      setCurrentVideoList,
+      setCurrentVideoIndex,
+      setIsVideoPlayerActive,
+    ]
+  );
 
   return (
     <>
       <PS3Header />
 
       <div
+        ref={menuRef}
         className="outline-none flex flex-col h-screen relative overflow-visible"
         tabIndex={0}
         onKeyDown={handleKeyDown}
@@ -438,7 +181,29 @@ export default function XMBMenu() {
                             ? "hidden"
                             : ""
                         }`}
-                        onClick={() => navigateTo(sub.url)}
+                        onClick={() => {
+                          if (sub.url) navigateTo(sub.url);
+                          if (sub.music && sub.music.length > 0) {
+                            // Flatten all tracks from all music submenus
+                            const allTracks =
+                              menuItems
+                                .find((item) => item.id === "music")
+                                ?.submenu?.flatMap((sub) => sub.music || []) ||
+                              [];
+                            // Find the index of the clicked track in the flattened list
+                            const clickedTrack = sub.music?.[0];
+                            const startIndex = allTracks.findIndex(
+                              (track) => track.src === clickedTrack?.src
+                            );
+                            setCurrentMusicList(allTracks);
+                            setCurrentMusicIndex(
+                              startIndex >= 0 ? startIndex : 0
+                            );
+                            setIsMusicPlayerActive(true);
+                            setIsPhotoListActive(false);
+                            setIsVideoPlayerActive(false);
+                          }
+                        }}
                         animate={{
                           y: getYOffset(subIndex, currentSubSelected),
                           opacity: currentSubSelected === subIndex ? 1 : 0.5,
@@ -454,12 +219,20 @@ export default function XMBMenu() {
                           alt={sub.label}
                           width={60}
                           height={60}
-                          className="submenu-icon transition mr-12"
+                          className={[
+                            "submenu-icon",
+                            "transition",
+                            "mr-12",
+                            sub.isDisc ? "disc-icon" : "",
+                            sub.isDisc && currentSubSelected === subIndex
+                              ? "spin"
+                              : "",
+                          ].join(" ")}
                         />
 
                         <motion.div className="flex flex-col">
                           <motion.span
-                            className={`mt-1 text-white text-2xl whitespace-nowrap ${
+                            className={`text-white text-2xl whitespace-nowrap ${
                               currentSubSelected === subIndex
                                 ? "submenu-glow"
                                 : ""
@@ -533,48 +306,114 @@ export default function XMBMenu() {
           </motion.div>
         </div>
 
-        {isPhotoListActive &&
-          menuItems[selected].submenu &&
-          menuItems[selected].submenu![currentSubSelected]?.photos && (
-            <div className="absolute top-130 left-100 w-auto h-full overflow-y-auto bg-[#000e55ad] border p-6 rounded-md shadow-lg text-white z-50">
-              {menuItems[selected].submenu![currentSubSelected]?.photos!.map(
-                (photo, index) => (
-                  <motion.div
-                    key={index}
-                    className={`flex items-center p-4 cursor-pointer ${
-                      currentPhotoIndex === index
-                        ? "bg-blue-500 text-white"
-                        : "bg-transparent text-gray-300"
-                    }`}
-                    animate={{
-                      scale: currentPhotoIndex === index ? 1.05 : 1,
-                    }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.label}
-                      width={60}
-                      height={60}
-                      className="rounded-md mr-4"
-                    />
+        {isPhotoListActive && currentPhotos && (
+          <div className="absolute top-130 left-100 w-auto h-full overflow-y-auto bg-[#000e5580] border p-6 rounded-md shadow-lg text-white z-50">
+            {currentPhotos.map((photo, index) => (
+              <motion.div
+                key={index}
+                className={`flex items-center p-4 cursor-pointer ${
+                  currentPhotoIndex === index
+                    ? "bg-blue-500 text-white"
+                    : "bg-transparent text-gray-300"
+                }`}
+                animate={{
+                  scale: currentPhotoIndex === index ? 1.05 : 1,
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.label}
+                  width={60}
+                  height={60}
+                  className="rounded-md mr-4"
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-                    <div className="flex flex-col">
-                      <span className="text-lg font-bold">{photo.label}</span>
-                      <span className="text-sm">{photo.subheading}</span>
-                    </div>
-                  </motion.div>
-                )
-              )}
-            </div>
-          )}
+        {isPhotoListActive && currentVideos && (
+          <div className="absolute top-130 left-100 w-auto h-full overflow-y-auto bg-[#000e55ad] border p-6 rounded-md shadow-lg text-white z-50">
+            {currentVideos.map((video, index) => (
+              <motion.div
+                key={index}
+                className={`flex items-center p-4 cursor-pointer ${
+                  currentPhotoIndex === index
+                    ? "bg-blue-500 text-white"
+                    : "bg-transparent text-gray-300"
+                }`}
+                animate={{
+                  scale: currentPhotoIndex === index ? 1.05 : 1,
+                }}
+                transition={{ duration: 0.2 }}
+                onClick={() => {
+                  setCurrentVideoList(currentVideos); // keep as array of objects
+                  setCurrentVideoIndex(index);
+                  setIsVideoPlayerActive(true);
+                  setIsPhotoListActive(false);
+                }}
+              >
+                <span className="mr-4">{video.label}</span>
+                <span className="text-xs text-gray-400">
+                  {video.subheading}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {isVideoPlayerActive && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-80">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
             <MediaPlayer
-              src={currentVideoList[currentVideoIndex]}
-              onClose={() => setIsVideoPlayerActive(false)}
-              // Optionally add next/prev handlers if your MediaPlayer supports them
+              src={currentVideoList[currentVideoIndex]?.src || ""}
+              onClose={() => {
+                setIsVideoPlayerActive(false);
+                setIsVideoPlayerMinimized(false);
+                setTimeout(() => menuRef.current?.focus(), 0);
+              }}
+              minimized={isVideoPlayerMinimized}
+              onMinimize={() => {
+                setIsVideoPlayerMinimized(true);
+                setTimeout(() => menuRef.current?.focus(), 0);
+              }}
+              onRestore={() => setIsVideoPlayerMinimized(false)}
+              onNextTrack={() => {
+                if (currentVideoIndex < currentVideoList.length - 1) {
+                  setCurrentVideoIndex(currentVideoIndex + 1);
+                }
+              }}
+              onPrevTrack={() => {
+                if (currentVideoIndex > 0) {
+                  setCurrentVideoIndex(currentVideoIndex - 1);
+                }
+              }}
+              hasNext={currentVideoIndex < currentVideoList.length - 1}
+              hasPrev={currentVideoIndex > 0}
+            />
+          </div>
+        )}
+
+        {isMusicPlayerActive && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            <MediaPlayer
+              src={currentMusicList[currentMusicIndex]?.src || ""}
+              onClose={() => setIsMusicPlayerActive(false)}
+              minimized={isVideoPlayerMinimized}
+              onMinimize={() => setIsVideoPlayerMinimized(true)}
+              onRestore={() => setIsVideoPlayerMinimized(false)}
+              onNextTrack={() => {
+                if (currentMusicIndex < currentMusicList.length - 1) {
+                  setCurrentMusicIndex(currentMusicIndex + 1);
+                }
+              }}
+              onPrevTrack={() => {
+                if (currentMusicIndex > 0) {
+                  setCurrentMusicIndex(currentMusicIndex - 1);
+                }
+              }}
+              hasNext={currentMusicIndex < currentMusicList.length - 1}
+              hasPrev={currentMusicIndex > 0}
             />
           </div>
         )}

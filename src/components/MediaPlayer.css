@@ -16,6 +16,15 @@
   height: 800px;
   margin: 0 auto;
   z-index: 5;
+  transition: transform 0.2s ease-in-out, translate 0.2s ease-in-out;
+
+}
+
+.media-player.minimized {
+  transform: scale(0.4);
+  translate: 40% -48%;
+  position: relative;
+  overflow: hidden;
 }
 
 .media-overlay {
@@ -99,4 +108,20 @@
 .minimize-btn {
   bottom: 228px;
   right: 96px;
+}
+
+.pill-btn {
+  width: 60px;
+  height: 30px;
+  border-radius: 48px;
+}
+
+.prev-track-btn {
+  bottom: 172px;
+  left: 355px;
+}
+
+.next-track-btn {
+  bottom: 172px;
+  left: 440px;
 }

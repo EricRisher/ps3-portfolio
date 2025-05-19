@@ -1,7 +1,7 @@
 .ps3-header {
   width: 400px;
   position: absolute;
-  background: #0000006e;
+  background: #00000038;
   padding: 0.5rem;
   display: flex;
   flex-direction: column; /* Change from row to column */
@@ -13,7 +13,7 @@
   border-radius: 4px;
   padding-right: 0rem;
   opacity: 
-  0.9;
+  0.8;
 }
 .ps3-clock-row {
   display: flex;
