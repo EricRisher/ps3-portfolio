@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sony Playstaion 3 XMB Inspired Web Dev Portfolio
+
+This PS3 XMB Portfolio is a visually nostaglic, interactive web application inspired by the iconic PlayStation 3 XMB (Cross Media Bar) interface. This project is built with React, Next and TypeScript, and aims to recreate the nostalgic look and feel of the PS3 dashboard while serving as a personal portfolio and multimedia showcase. Users can navigate through categories such as Projects, Photos, Music, and Videos using keyboard or mouse, and enjoy a seamless, console-like experience. The application features a custom media player for both video and audio, animated disc icons, and a dynamic data-driven menu system, making it both a technical demo and a fun, immersive way to present your work or media collection.
+
+---
+
+## Features
+
+- **Authentic XMB-Style Navigation:**  
+  Navigate categories and submenus with smooth transitions, keyboard support, and animated highlights, closely mimicking the PlayStation 3 user experience.
+
+- **Unified Media Player:**  
+  Play both video (`.mp4`, `.mov`) and audio (`.mp3`) files in a custom player. The player supports next/previous track navigation, play/pause (including spacebar shortcut), and displays a black background for audio tracks for a clean look.
+
+- **Photo Gallery Viewer:**  
+  Browse photo albums in a dedicated modal with keyboard navigation for a gallery-like experience.
+
+- **Animated Disc Icons:**  
+  Music submenu items display disc icons that spin when selected, adding a playful and dynamic touch reminiscent of the PS3's UI.
+
+- **Dynamic, Data-Driven Menu:**  
+  All menu items, media, and content are managed through a single TypeScript data file, making it easy to update or expand your portfolio.
+
+- **Keyboard Shortcuts:**  
+  - Arrow keys: Move between categories and submenus
+  - Enter: Open selected item (media, photo, or link)
+  - Space: Play/Pause media
+  - On-screen buttons: Next/Prev track navigation
+
+- **Responsive Design:**  
+  The interface adapts to different screen sizes, ensuring a great experience on both desktop and mobile devices.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+3. **Open in your browser:**
+   ```
+   Visit https://localhost:3000 to view the app.
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Live Demo
+https://ps3-portfolio.vercel.app/
