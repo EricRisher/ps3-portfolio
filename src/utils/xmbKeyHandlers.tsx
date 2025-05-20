@@ -47,11 +47,28 @@ export function handlePhotoListKeyDown(
 
 export function handleVideoPlayerKeyDown(
   e: React.KeyboardEvent,
-  setIsVideoPlayerActive: (b: boolean) => void
+  setIsVideoPlayerActive: (b: boolean) => void,
+  focusMenu?: () => void
 ) {
   switch (e.key) {
     case "Escape":
       setIsVideoPlayerActive(false);
+      if (focusMenu) setTimeout(focusMenu, 0);
+      break;
+    default:
+      break;
+  }
+}
+
+export function handleMusicPlayerKeyDown(
+  e: React.KeyboardEvent,
+  setIsMusicPlayerActive: (b: boolean) => void,
+  focusMenu?: () => void
+) {
+  switch (e.key) {
+    case "Escape":
+      setIsMusicPlayerActive(false);
+      if (focusMenu) setTimeout(focusMenu, 0);
       break;
     default:
       break;

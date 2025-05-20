@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import "./XMBMenu.css";
@@ -12,6 +12,7 @@ import {
   handlePhotoListKeyDown,
   handleVideoPlayerKeyDown,
   handleMainMenuKeyDown,
+  handleMusicPlayerKeyDown,
 } from "../utils/xmbKeyHandlers";
 
 export default function XMBMenu() {
@@ -34,6 +35,20 @@ export default function XMBMenu() {
   const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const [isMusicPlayerActive, setIsMusicPlayerActive] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const videoOverlayRef = useRef<HTMLDivElement>(null);
+  const musicOverlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isVideoPlayerActive && videoOverlayRef.current) {
+      videoOverlayRef.current.focus();
+    }
+  }, [isVideoPlayerActive]);
+
+  useEffect(() => {
+    if (isMusicPlayerActive && musicOverlayRef.current) {
+      musicOverlayRef.current.focus();
+    }
+  }, [isMusicPlayerActive]);
 
   // Memoize currentSubSelected
   const currentSubSelected = useMemo(() => {
@@ -71,8 +86,12 @@ export default function XMBMenu() {
   // Memoize handleKeyDown to avoid unnecessary re-renders
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (isVideoPlayerActive && !isVideoPlayerMinimized) {
-        handleVideoPlayerKeyDown(e, setIsVideoPlayerActive);
+      // Lock main menu navigation if a media player is active and not minimized
+      if (
+        (isVideoPlayerActive && !isVideoPlayerMinimized) ||
+        (isMusicPlayerActive && !isVideoPlayerMinimized)
+      ) {
+        // Only let the overlay handle keys
         return;
       }
       if (isPhotoListActive) {
@@ -106,6 +125,7 @@ export default function XMBMenu() {
     },
     [
       isVideoPlayerActive,
+      isMusicPlayerActive,
       isVideoPlayerMinimized,
       isPhotoListActive,
       selected,
@@ -118,6 +138,9 @@ export default function XMBMenu() {
       setCurrentVideoList,
       setCurrentVideoIndex,
       setIsVideoPlayerActive,
+      setCurrentMusicList,
+      setCurrentMusicIndex,
+      setIsMusicPlayerActive,
     ]
   );
 
@@ -364,7 +387,16 @@ export default function XMBMenu() {
         )}
 
         {isVideoPlayerActive && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div
+            ref={videoOverlayRef}
+            className="fixed inset-0 z-[100] flex items-center justify-center"
+            tabIndex={0}
+            onKeyDown={(e) =>
+              handleVideoPlayerKeyDown(e, setIsVideoPlayerActive, () =>
+                menuRef.current?.focus()
+              )
+            }
+          >
             <MediaPlayer
               src={currentVideoList[currentVideoIndex]?.src || ""}
               onClose={() => {
@@ -395,10 +427,22 @@ export default function XMBMenu() {
         )}
 
         {isMusicPlayerActive && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div
+            ref={musicOverlayRef}
+            className="fixed inset-0 z-[100] flex items-center justify-center"
+            tabIndex={0}
+            onKeyDown={(e) =>
+              handleMusicPlayerKeyDown(e, setIsMusicPlayerActive, () =>
+                menuRef.current?.focus()
+              )
+            }
+          >
             <MediaPlayer
               src={currentMusicList[currentMusicIndex]?.src || ""}
-              onClose={() => setIsMusicPlayerActive(false)}
+              onClose={() => {
+                setIsMusicPlayerActive(false);
+                setTimeout(() => menuRef.current?.focus(), 0);
+              }}
               minimized={isVideoPlayerMinimized}
               onMinimize={() => setIsVideoPlayerMinimized(true)}
               onRestore={() => setIsVideoPlayerMinimized(false)}

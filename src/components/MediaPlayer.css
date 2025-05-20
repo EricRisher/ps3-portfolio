@@ -10,14 +10,12 @@
 
 .media-player {
   position: relative;
-  justify-content: center;
   align-items: center;
   width: 800px;
   height: 800px;
   margin: 0 auto;
   z-index: 5;
   transition: transform 0.2s ease-in-out, translate 0.2s ease-in-out;
-
 }
 
 .media-player.minimized {

@@ -44,7 +44,7 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({
 
   // Add spacebar keydown handler
   useEffect(() => {
-    if (minimized) return; // Don't listen when minimized
+    if (minimized) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" || e.key === " ") {
@@ -59,7 +59,6 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({
   // Auto play the video when src changes and not minimized
   useEffect(() => {
     if (videoRef.current && src && !minimized) {
-      // Only play, don't reset currentTime
       videoRef.current.play().catch(() => {});
     }
   }, [src, minimized]);
@@ -72,9 +71,9 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({
   // Handle close player click
   const handleCloseButtonClick = () => {
     if (videoRef.current) {
-      videoRef.current.pause(); // Pause the video
+      videoRef.current.pause();
     }
-    onClose(); // Call the onClose callback
+    onClose();
   };
 
   // Handle minimize button click
@@ -94,8 +93,8 @@ const MediaPlayer: React.FC<MediaPlayerProps> = ({
   // Handle reset track button click
   const handleToggleResetClick = () => {
     if (videoRef.current) {
-      videoRef.current.currentTime = 0; // Reset the video to the beginning
-      videoRef.current.pause(); // Pause the video
+      videoRef.current.currentTime = 0;
+      videoRef.current.pause();
     } else {
       console.log("Video reference is null");
     }
