@@ -161,14 +161,14 @@ const menuItems: MenuItem[] = [
       },
       {
         id: "music2",
-        label: "disc 1",
+        label: "Lease - Takeshi Abo",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/lease-disc.png",
         content: "",
         subheading: "1 Track",
         music: [
           {
-            src: "/music/little-big-planet.mp3",
+            src: "/music/LEASE by Takeshi Abo.mp4",
             label: "Little Big Planet Theme",
             subheading: "The theme song from Little Big Planet.",
           },
@@ -177,30 +177,31 @@ const menuItems: MenuItem[] = [
       },
       {
         id: "music3",
-        label: "disc 2",
+        label: "Scizzie - Aquatic Ambience",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/scizzie-disc.png",
         content: "",
         subheading: "1 Track",
         music: [
           {
-            src: "/music/little-big-planet.mp3",
+            src: "/music/scizzie - aquatic ambience.mp4",
             label: "Little Big Planet Theme",
             subheading: "The theme song from Little Big Planet.",
           },
         ],
         isDisc: true,
       },
+
       {
         id: "music4",
-        label: "disc 3",
+        label: "Trance - 009 Sound System Dreamscape",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/trance-disc.png",
         content: "",
         subheading: "1 Track",
         music: [
           {
-            src: "/music/little-big-planet.mp3",
+            src: "/music/Trance - 009 Sound System Dreamscape.mp4",
             label: "Little Big Planet Theme",
             subheading: "The theme song from Little Big Planet.",
           },
@@ -209,36 +210,20 @@ const menuItems: MenuItem[] = [
       },
       {
         id: "music5",
-        label: "disc 4",
+        label: "2004 Ur Mall - zan",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/2004-disc.png",
         content: "",
         subheading: "1 Track",
         music: [
           {
-            src: "/music/little-big-planet.mp3",
+            src: "/music/2004 ur mall - zan.mp4",
             label: "Little Big Planet Theme",
             subheading: "The theme song from Little Big Planet.",
           },
         ],
         isDisc: true,
-      },
-      {
-        id: "music6",
-        label: "disc 5",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "1 Track",
-        music: [
-          {
-            src: "/music/little-big-planet.mp3",
-            label: "Little Big Planet Theme",
-            subheading: "The theme song from Little Big Planet.",
-          },
-        ],
-        isDisc: true,
-      },
+      }
     ],
   },
   {
@@ -273,7 +258,7 @@ const menuItems: MenuItem[] = [
             src: "/videos/lbp-acting.mp4",
             label: "LBP Acting",
             subheading: "Tutorial on acting in LBP.",
-          }
+          },
         ],
       },
       {
