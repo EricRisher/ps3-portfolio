@@ -223,7 +223,39 @@ const menuItems: MenuItem[] = [
           },
         ],
         isDisc: true,
-      }
+      },
+      {
+        id: "music6",
+        label: "End of Small Sanctuary - Akira Yamaoka",
+        url: "",
+        icon: "/icons/sh3-disc.png",
+        content: "",
+        subheading: "1 Track",
+        music: [
+          {
+            src: "/music/End of Small Sanctuary.mp4",
+            label: "Little Big Planet Theme",
+            subheading: "The theme song from Little Big Planet.",
+          },
+        ],
+        isDisc: true,
+      },
+      {
+        id: "music7",
+        label: "BGM 08 - Tori no Hoshi Aerial Planet",
+        url: "",
+        icon: "/icons/disc.png",
+        content: "",
+        subheading: "1 Track",
+        music: [
+          {
+            src: "/music/End of Small Sanctuary.mp4",
+            label: "Little Big Planet Theme",
+            subheading: "The theme song from Little Big Planet.",
+          },
+        ],
+        isDisc: true,
+      },
     ],
   },
   {
