@@ -48,27 +48,6 @@ const menuItems: MenuItem[] = [
         icon: "/icons/power.svg",
         content: "",
       },
-      {
-        id: "home5",
-        label: "Settings",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
-      {
-        id: "home6",
-        label: "Help",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
-      {
-        id: "home7",
-        label: "About",
-        url: "",
-        icon: "/icons/info.svg",
-        content: "",
-      },
     ],
   },
   {
@@ -244,12 +223,12 @@ const menuItems: MenuItem[] = [
         id: "music7",
         label: "BGM 08 - Tori no Hoshi Aerial Planet",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/tori-disc.png",
         content: "",
         subheading: "1 Track",
         music: [
           {
-            src: "/music/End of Small Sanctuary.mp4",
+            src: "/music/Tori no Hoshi Aerial Planet.mp4",
             label: "Little Big Planet Theme",
             subheading: "The theme song from Little Big Planet.",
           },
