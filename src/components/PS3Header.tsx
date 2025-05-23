@@ -1,21 +1,26 @@
 "use client";
+import { useStartup } from "../context/StartupContext";
 import { useEffect, useState } from "react";
 import "./PS3Header.css";
 import { motion, AnimatePresence } from "framer-motion";
 
 function TextCarousel() {
-const texts = [
-  "Welcome to my full stack dev portfolio",
-  "Use the arrow keys to explore my projects",
-  "Checkout my GitHub https://github.com/ericrisher",
-];
+  const texts = [
+    "Welcome to my PS3 XMB inspired project",
+    "Navigate using the arrow keys and select with Enter",
+    "Checkout my GitHub github.com/ericrisher",
+    "Learn more about me at EricRisher.com",
+    "This is a work in progress, so stay tuned for updates",
+    "Listen to music, watch videos, and view photos",
+    "Rest in Peace PS3 XMB, 2006 - 2017",
+  ];
 
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % texts.length);
-    }, 3000); // Change text every 3 seconds
+    }, 6000);
     return () => clearInterval(timer);
   }, [texts.length]);
 
@@ -114,6 +119,13 @@ function Clock() {
 }
 
 export default function PS3Header() {
+  const { phase } = useStartup();
+
+  // Only show header after "showUI" phase
+  if (phase !== "showUI") {
+    return null;
+  }
+
   return (
     <header className="ps3-header outline pt-4">
       <Clock />

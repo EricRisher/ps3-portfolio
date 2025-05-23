@@ -1,7 +1,17 @@
 "use client";
+import { useStartup } from "../context/StartupContext";
 
 export default function VideoBackground() {
-  return (
+  const { phase } = useStartup();
+
+  // Show video as soon as overlay starts fading out
+  const showVideo =
+    phase === "fadeOutOverlay" ||
+    phase === "showH1" ||
+    phase === "hideH1" ||
+    phase === "showUI";
+
+  return showVideo ? (
     <video
       autoPlay
       loop
@@ -11,5 +21,5 @@ export default function VideoBackground() {
     >
       <source src="/videos/ps3-ribbon.mp4" type="video/mp4" />
     </video>
-  );
+  ) : null;
 }

@@ -1,5 +1,5 @@
 "use client";
-
+import { useStartup } from "../context/StartupContext";
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -16,6 +16,9 @@ import {
 } from "../utils/xmbKeyHandlers";
 
 export default function XMBMenu() {
+  const { phase } = useStartup();
+
+  // All hooks must be called unconditionally
   const [selected, setSelected] = useState(0);
   const [subSelectedMapping, setSubSelectedMapping] = useState<{
     [key: string]: number;
@@ -50,27 +53,22 @@ export default function XMBMenu() {
     }
   }, [isMusicPlayerActive]);
 
-  // Memoize currentSubSelected
   const currentSubSelected = useMemo(() => {
     return subSelectedMapping[menuItems[selected].id] ?? 0;
   }, [subSelectedMapping, selected]);
 
-  // Memoize currentSubmenu
   const currentSubmenu = useMemo(() => {
     return menuItems[selected].submenu?.[currentSubSelected];
   }, [selected, currentSubSelected]);
 
-  // Memoize currentPhotos
   const currentPhotos = useMemo(() => {
     return currentSubmenu?.photos;
   }, [currentSubmenu]);
 
-  // Memoize currentVideos
   const currentVideos = useMemo(() => {
     return currentSubmenu?.videos;
   }, [currentSubmenu]);
 
-  // Memoize currentContent
   const currentContent = useMemo(() => {
     return (
       menuItems[selected].submenu?.[currentSubSelected]?.content ||
@@ -83,15 +81,12 @@ export default function XMBMenu() {
   const containerWidth = 1000;
   const centerOffset = containerWidth / 5 - itemWidth / 2;
 
-  // Memoize handleKeyDown to avoid unnecessary re-renders
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Lock main menu navigation if a media player is active and not minimized
       if (
         (isVideoPlayerActive && !isVideoPlayerMinimized) ||
         (isMusicPlayerActive && !isVideoPlayerMinimized)
       ) {
-        // Only let the overlay handle keys
         return;
       }
       if (isPhotoListActive) {
@@ -144,8 +139,16 @@ export default function XMBMenu() {
     ]
   );
 
+  // Only render UI when phase is "showUI"
+  const isVisible = phase === "showUI";
+
   return (
-    <>
+    <div
+      className={`transition-opacity duration-500 ${
+        isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+      style={{ transition: "opacity 0.8s" }}
+    >
       <PS3Header />
 
       <div
@@ -462,6 +465,6 @@ export default function XMBMenu() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
