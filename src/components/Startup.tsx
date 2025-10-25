@@ -1,21 +1,25 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useStartup } from "../context/StartupContext";
 
-function Startup() {
+function Startup({ onEnd }: { onEnd?: () => void }) {
   const { phase } = useStartup();
-  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Play audio once on mount
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.play().catch((e) => {
-        // Optionally, handle autoplay block here (e.g., show a "click to start" button)
-        // console.log("Audio autoplay was blocked:", e);
-        console.log("Audio autoplay was blocked:", e);
-        
-      });
-    }
+    // Play audio on mount
+    const audio = new Audio("/sounds/startup.mp3");
+    audio.play().catch(() => {});
+    console.log("Audio started");
+    return () => {
+      audio.pause();
+      audio.currentTime = 0;
+    };
   }, []);
+
+  useEffect(() => {
+    if (phase === "showUI" && onEnd) {
+      onEnd();
+    }
+  }, [phase, onEnd]);
 
   // Overlay is visible during fadeIn and fadeOutOverlay
   const showOverlay = phase === "fadeIn" || phase === "fadeOutOverlay";
@@ -41,7 +45,6 @@ function Startup() {
   return (
     <>
       {/* Overlay */}
-      <audio ref={audioRef} src="/sounds/startup.mp3" preload="auto" />
       <div
         className={`fixed inset-0 z-[200] bg-black transition-opacity duration-700 pointer-events-none ${
           showOverlay ? overlayOpacity : "opacity-0"
@@ -55,7 +58,6 @@ function Startup() {
           Eric&apos;s Computer Entertainment
         </h1>
       </div>
-
     </>
   );
 }

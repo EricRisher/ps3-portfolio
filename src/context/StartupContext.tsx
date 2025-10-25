@@ -1,14 +1,21 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 type StartupPhase =
+  | "pending"
   | "fadeIn"
   | "fadeOutOverlay"
   | "showH1"
   | "hideH1"
   | "showUI";
 
-const StartupContext = createContext<{ phase: StartupPhase }>({
+interface StartupContextType {
+  phase: StartupPhase;
+  startSequence: () => void;
+}
+
+const StartupContext = createContext<StartupContextType>({
   phase: "fadeIn",
+  startSequence: () => {},
 });
 
 export const useStartup = () => useContext(StartupContext);
@@ -17,6 +24,10 @@ export const StartupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [phase, setPhase] = useState<StartupPhase>("fadeIn");
+
+  const startSequence = () => {
+    setPhase("fadeIn");
+  };
 
   useEffect(() => {
     const timers: NodeJS.Timeout[] = [];
@@ -38,7 +49,7 @@ export const StartupProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [phase]);
 
   return (
-    <StartupContext.Provider value={{ phase }}>
+    <StartupContext.Provider value={{ phase, startSequence }}>
       {children}
     </StartupContext.Provider>
   );

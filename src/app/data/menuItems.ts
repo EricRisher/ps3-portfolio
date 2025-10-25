@@ -371,8 +371,17 @@ const menuItems: MenuItem[] = [
         content: "",
         subheading: "Connect with me on LinkedIn.",
       },
+
       {
         id: "contact3",
+        label: "GitHub",
+        url: "https://github.com/EricRisher",
+        icon: "/icons/github.svg",
+        content: "",
+        subheading: "Check out my GitHub profile.",
+      },
+      {
+        id: "contact4",
         label: "EricRisher.com",
         url: "https://ericrisher.com",
         icon: "/icons/logo.png",
