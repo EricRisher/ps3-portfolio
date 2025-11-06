@@ -6,6 +6,7 @@ import Image from "next/image";
 import "./XMBMenu.css";
 import PS3Header from "./PS3Header";
 import MediaPlayer from "./MediaPlayer";
+import TVPlayer from "./TVPlayer";
 import menuItems from "../app/data/menuItems";
 import { navigateTo, getYOffset } from "../utils/helpers";
 import {
@@ -40,6 +41,10 @@ export default function XMBMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
   const videoOverlayRef = useRef<HTMLDivElement>(null);
   const musicOverlayRef = useRef<HTMLDivElement>(null);
+  const [isGamePlayerActive, setIsGamePlayerActive] = useState(false);
+  const [currentGameSrc, setCurrentGameSrc] = useState<string | null>(null);
+  const [isInputLocked, setIsInputLocked] = useState(false);
+
 
   useEffect(() => {
     if (isVideoPlayerActive && videoOverlayRef.current) {
@@ -83,6 +88,7 @@ export default function XMBMenu() {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      if (isInputLocked) return;
       if (
         (isVideoPlayerActive && !isVideoPlayerMinimized) ||
         (isMusicPlayerActive && !isVideoPlayerMinimized)
@@ -115,7 +121,10 @@ export default function XMBMenu() {
         setIsVideoPlayerActive,
         setCurrentMusicList,
         setCurrentMusicIndex,
-        setIsMusicPlayerActive
+        setIsMusicPlayerActive,
+        setIsGamePlayerActive,
+        setCurrentGameSrc,
+        isGamePlayerActive
       );
     },
     [
@@ -136,6 +145,9 @@ export default function XMBMenu() {
       setCurrentMusicList,
       setCurrentMusicIndex,
       setIsMusicPlayerActive,
+      setIsGamePlayerActive,
+      setCurrentGameSrc,
+      isGamePlayerActive,
     ]
   );
 
@@ -463,6 +475,13 @@ export default function XMBMenu() {
               hasPrev={currentMusicIndex > 0}
             />
           </div>
+        )}
+        {isGamePlayerActive && currentGameSrc && (
+          <TVPlayer
+            src={currentGameSrc}
+            onClose={() => setIsGamePlayerActive(false)}
+            setIsInputLocked={setIsInputLocked} 
+          />
         )}
       </div>
     </div>

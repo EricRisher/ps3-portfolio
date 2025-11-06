@@ -75,6 +75,21 @@ export function handleMusicPlayerKeyDown(
   }
 }
 
+export function handleGamePlayerKeyDown(
+  e: React.KeyboardEvent,
+  setIsGamePlayerActive: (b: boolean) => void,
+  focusMenu?: () => void
+) {
+  switch (e.key) {
+    case "Escape":
+      setIsGamePlayerActive(false);
+      if (focusMenu) setTimeout(focusMenu, 0);
+      break;
+    default:
+      break;
+  }
+}
+
 export function handleMainMenuKeyDown(
   e: React.KeyboardEvent,
   menuItems: MenuItem[],
@@ -95,8 +110,12 @@ export function handleMainMenuKeyDown(
     list: { src: string; label: string; subheading: string }[]
   ) => void,
   setCurrentMusicIndex: (i: number) => void,
-  setIsMusicPlayerActive: (b: boolean) => void
+  setIsMusicPlayerActive: (b: boolean) => void,
+  setIsGamePlayerActive: (b: boolean) => void,
+  setCurrentGameSrc: (src: string | null) => void,
+  isGamePlayerActive: boolean // 🆕 Add this
 ) {
+  if (isGamePlayerActive) return;
   const currentCategoryId = menuItems[selected].id;
   let newSubIndex: number | null = null;
   let shouldPlaySound = false;
@@ -132,6 +151,7 @@ export function handleMainMenuKeyDown(
     case "Enter":
       if (menuItems[selected].submenu) {
         const currentItem = menuItems[selected].submenu![currentSubSelected];
+
         if (currentItem.photos && currentItem.photos.length > 0) {
           setIsPhotoListActive(true);
           setCurrentPhotoIndex(0);
@@ -140,7 +160,6 @@ export function handleMainMenuKeyDown(
           setCurrentVideoIndex(0);
           setIsVideoPlayerActive(true);
         } else if (currentItem.music && currentItem.music.length > 0) {
-          // Flatten all tracks from all music submenus
           const allTracks =
             menuItems
               .find((item) => item.id === "music")
@@ -152,6 +171,13 @@ export function handleMainMenuKeyDown(
           setCurrentMusicList(allTracks);
           setCurrentMusicIndex(startIndex >= 0 ? startIndex : 0);
           setIsMusicPlayerActive(true);
+        }
+        // 🕹️ New Game Logic
+        else if (currentItem.game && currentItem.game.length > 0) {
+          const gameSrc = currentItem.game[0].src;
+          setCurrentGameSrc(gameSrc);
+          setIsGamePlayerActive(true);
+          console.log(`Launched game: ${currentItem.label}`);
         } else if (currentItem.url && currentItem.url.trim() !== "") {
           navigateTo(currentItem.url);
         } else {

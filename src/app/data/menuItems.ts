@@ -9,6 +9,7 @@ export type MenuItem = {
   photos?: { src: string; label: string; subheading: string }[];
   videos?: { src: string; label: string; subheading: string }[];
   music?: { src: string; label: string; subheading: string }[];
+  game?: { src: string; label: string; subheading: string }[];
   isDisc?: boolean;
 };
 
@@ -296,58 +297,20 @@ const menuItems: MenuItem[] = [
     submenu: [
       {
         id: "game1",
-        label: "TicTacToe",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "A simple TicTacToe game.",
-        isDisc: true,
-      },
-      {
-        id: "game2",
         label: "Snake",
         url: "",
-        icon: "/icons/disc.png",
+        icon: "/icons/snake-disc.png",
         content: "",
-        subheading: "A simple Snake game.",
+        subheading: "The classic Snake game. - JavaScript",
         isDisc: true,
-      },
-      {
-        id: "game3",
-        label: "Pong",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "A simple Pong game.",
-        isDisc: true,
-      },
-      {
-        id: "game4",
-        label: "Pacman",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "A simple Pacman game.",
-        isDisc: true,
-      },
-      {
-        id: "game5",
-        label: "Tetris",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "A simple Tetris game.",
-        isDisc: true,
-      },
-      {
-        id: "game6",
-        label: "Asteroids",
-        url: "",
-        icon: "/icons/disc.png",
-        content: "",
-        subheading: "A simple Asteroids game.",
-        isDisc: true,
-      },
+        game: [
+          {
+            src: "/games/snake/index.html",
+            label: "Snake Game",
+            subheading: "Play the classic Snake game.",
+          }
+        ]
+      }
     ],
   },
   {
